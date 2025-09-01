@@ -205,7 +205,7 @@ class WizStockBarcodesRead(models.AbstractModel):
         return False
 
     def process_barcode_product_id(self):
-        domain = self._barcode_domain(self.barcode)
+        domain = self._barcode_domain(self.barcode.lstrip('0)'))
         product = self.env["product.product"].search(domain)
         if product:
             if len(product) > 1:
