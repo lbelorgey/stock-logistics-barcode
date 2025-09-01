@@ -57,6 +57,7 @@ class WizStockBarcodesRead(models.AbstractModel):
     def _process_ai_10(self, gs1_list):
         """Serial/Lot identification"""
         self.lot_name = self.barcode
+        self.lot_id = False
         # Determine if barcode scanned has included the weight to no update product_qty
         # from lot
         weight_ai = next(filter(lambda f: f["ai"].startswith("31"), gs1_list), False)

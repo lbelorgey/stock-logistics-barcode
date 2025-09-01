@@ -540,11 +540,12 @@ class WizStockBarcodesReadPicking(models.TransientModel):
         )
         # Check if exists lines with lot created if product has tracking serial
         if self.product_id.tracking == "serial":
+            prec = self.env["decimal.precision"].precision_get(
+                "Product Unit of Measure"
+            )
             serial_lines = self.picking_id.move_line_ids.filtered(
-                lambda sml: (
-                    sml.lot_id == self.lot_id or sml.lot_name == self.lot_id.name
-                )
-                and sml.qty_done >= 1.0
+                lambda sml: (sml.lot_id == self.lot_id or sml.lot_name == self.lot_name)
+                and float_compare(sml.qty_done, 1.0, precision_digits=prec) >= 0
             )
             if serial_lines:
                 self._set_messagge_info("more_match", _("S/N Already in picking"))
@@ -559,7 +560,7 @@ class WizStockBarcodesReadPicking(models.TransientModel):
             if (
                 self.option_group_id.create_lot
                 and self.product_id.tracking == "serial"
-                and candidate_lines.filtered(lambda ln: ln.lot_name == self.lot_id.name)
+                and candidate_lines.filtered(lambda ln: ln.lot_name == self.lot_name)
             ):
                 self.lot_id = False
                 self._set_messagge_info("more_match", _("S/N already created"))
